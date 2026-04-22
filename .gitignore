@@ -1,0 +1,31 @@
+# Visual Studio / MSBuild
+.vs/
+build/
+x64/
+Debug/
+Release/
+*.user
+*.suo
+*.aps
+*.vcxproj.user
+*.ncb
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+ipch/
+
+# Build artifacts
+*.dll
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.obj
+*.log
+*.tlog
+*.idb
+
+# OS junk
+Thumbs.db
+.DS_Store
