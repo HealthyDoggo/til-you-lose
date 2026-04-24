@@ -248,27 +248,17 @@ void TilYouLose::RenderSettings()
     auto selected = ParsePlaylists(playlistsCvar.getStringValue());
     bool changed = false;
 
-    if (ImGui::BeginTable("tyl_playlist_table", 2,
-                          ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-        ImGui::TableSetupColumn("Enabled");
-        ImGui::TableSetupColumn("Playlist");
-        ImGui::TableHeadersRow();
-        for (const auto& entry : KnownPlaylists()) {
-            const int id = entry.first;
-            const std::string& name = entry.second;
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            bool on = selected.count(id) > 0;
-            const std::string label = "##tyl_pl_" + std::to_string(id);
-            if (ImGui::Checkbox(label.c_str(), &on)) {
-                if (on) selected.insert(id);
-                else    selected.erase(id);
-                changed = true;
-            }
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%d - %s", id, name.c_str());
+    for (const auto& entry : KnownPlaylists()) {
+        const int id = entry.first;
+        const std::string& name = entry.second;
+        bool on = selected.count(id) > 0;
+        const std::string label =
+            std::to_string(id) + " - " + name + "##tyl_pl_" + std::to_string(id);
+        if (ImGui::Checkbox(label.c_str(), &on)) {
+            if (on) selected.insert(id);
+            else    selected.erase(id);
+            changed = true;
         }
-        ImGui::EndTable();
     }
 
     ImGui::Spacing();
