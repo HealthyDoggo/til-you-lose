@@ -169,6 +169,10 @@ void TilYouLose::OnMatchEnded(std::string /*eventName*/)
 {
     if (alreadyTriggeredThisMatch_) return;
     if (!cvarManager->getCvar(kEnabledCvar).getBoolValue()) return;
+    if (!gameWrapper->IsInOnlineGame()) {
+        cvarManager->log("[TilYouLose] Match-end fired but not in online game, ignoring");
+        return;
+    }
 
     if (!IsCurrentPlaylistTargeted()) {
         cvarManager->log("[TilYouLose] Match ended - playlist not targeted, staying open");
@@ -215,30 +219,30 @@ void TilYouLose::SetImGuiContext(uintptr_t ctx)
 
 void TilYouLose::RenderSettings()
 {
-    ImGui::TextUnformatted(
-        "Closes Rocket League after you lose a match in any of the selected playlists.");
-    ImGui::Separator();
-
-    {
-        auto cv = cvarManager->getCvar(kEnabledCvar);
-        bool v = cv.getBoolValue();
-        if (ImGui::Checkbox("Plugin enabled", &v)) cv.setValue(v);
-    }
-    {
-        auto cv = cvarManager->getCvar(kForceQuitCvar);
-        bool v = cv.getBoolValue();
-        if (ImGui::Checkbox("Force-terminate process (skip clean quit)", &v)) cv.setValue(v);
-    }
-    {
-        auto cv = cvarManager->getCvar(kDelayCvar);
-        float v = cv.getFloatValue();
-        if (ImGui::SliderFloat("Delay before closing (seconds)", &v, 0.0f, 60.0f, "%.1f")) {
-            cv.setValue(v);
-        }
+    // Log once per panel-open so we can tell if we're being entered at all.
+    if (!renderLogged_) {
+        cvarManager->log("[TilYouLose] RenderSettings entered");
+        renderLogged_ = true;
     }
 
-    ImGui::Separator();
-    ImGui::TextUnformatted("Playlists that trigger quit-on-loss:");
+    ImGui::Text("Til You Lose - closes the game when you lose in selected playlists.");
+
+    bool enabled = cvarManager->getCvar(kEnabledCvar).getBoolValue();
+    if (ImGui::Checkbox("Plugin enabled", &enabled)) {
+        cvarManager->getCvar(kEnabledCvar).setValue(enabled);
+    }
+
+    bool forceQuit = cvarManager->getCvar(kForceQuitCvar).getBoolValue();
+    if (ImGui::Checkbox("Force-terminate (skip clean quit)", &forceQuit)) {
+        cvarManager->getCvar(kForceQuitCvar).setValue(forceQuit);
+    }
+
+    float delay = cvarManager->getCvar(kDelayCvar).getFloatValue();
+    if (ImGui::SliderFloat("Delay seconds", &delay, 0.0f, 60.0f)) {
+        cvarManager->getCvar(kDelayCvar).setValue(delay);
+    }
+
+    ImGui::Text("Playlists:");
 
     auto playlistsCvar = cvarManager->getCvar(kPlaylistsCvar);
     auto selected = ParsePlaylists(playlistsCvar.getStringValue());
@@ -246,10 +250,9 @@ void TilYouLose::RenderSettings()
 
     for (const auto& entry : KnownPlaylists()) {
         const int id = entry.first;
-        const std::string& name = entry.second;
         bool on = selected.count(id) > 0;
         const std::string label =
-            std::to_string(id) + " - " + name + "##tyl_pl_" + std::to_string(id);
+            std::to_string(id) + " - " + entry.second + "##tyl_pl_" + std::to_string(id);
         if (ImGui::Checkbox(label.c_str(), &on)) {
             if (on) selected.insert(id);
             else    selected.erase(id);
@@ -257,29 +260,7 @@ void TilYouLose::RenderSettings()
         }
     }
 
-    ImGui::Spacing();
-    ImGui::TextUnformatted("Custom playlist IDs (comma-separated):");
-    {
-        std::string raw = JoinPlaylists(selected);
-        char buf[256] = {0};
-        strncpy_s(buf, raw.c_str(), sizeof(buf) - 1);
-        if (ImGui::InputText("##tyl_playlists_raw", buf, sizeof(buf))) {
-            selected = ParsePlaylists(buf);
-            changed = true;
-        }
-    }
-
     if (changed) {
         playlistsCvar.setValue(JoinPlaylists(selected));
-    }
-
-    ImGui::Separator();
-    const int currentId = GetCurrentPlaylistId();
-    if (currentId >= 0) {
-        ImGui::Text("Current playlist ID: %d (%s)",
-            currentId,
-            selected.count(currentId) ? "targeted" : "ignored");
-    } else {
-        ImGui::TextUnformatted("Not currently in a match.");
     }
 }

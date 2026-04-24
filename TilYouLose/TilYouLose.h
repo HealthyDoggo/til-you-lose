@@ -32,4 +32,5 @@ private:
     static const std::vector<std::pair<int, std::string>>& KnownPlaylists();
 
     bool alreadyTriggeredThisMatch_ = false;
+    bool renderLogged_ = false;
 };
