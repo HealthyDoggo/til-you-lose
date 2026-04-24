@@ -112,13 +112,9 @@ void TilYouLose::onUnload()
 
 int TilYouLose::GetCurrentPlaylistId()
 {
-    ServerWrapper server = gameWrapper->GetOnlineGame();
-    if (server.IsNull()) server = gameWrapper->GetCurrentGameState();
-    if (server.IsNull()) return -1;
-
-    PlaylistWrapper playlist = server.GetPlaylist();
-    if (playlist.memory_address == 0) return -1;
-    return playlist.GetPlaylistId();
+    MMRWrapper mmr = gameWrapper->GetMMRWrapper();
+    const int id = mmr.GetCurrentPlaylist();
+    return id > 0 ? id : -1;
 }
 
 bool TilYouLose::IsCurrentPlaylistTargeted()

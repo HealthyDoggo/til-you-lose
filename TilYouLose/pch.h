@@ -7,7 +7,7 @@
 
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 #include "bakkesmod/plugin/pluginsettingswindow.h"
-#include "bakkesmod/wrappers/PlaylistWrapper.h"
+#include "bakkesmod/wrappers/MMRWrapper.h"
 #include "imgui/imgui.h"
 
 #include <algorithm>
