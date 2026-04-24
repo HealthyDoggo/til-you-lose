@@ -96,6 +96,21 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TilYouLose.cpp" />
+    <ClCompile Include="$(BAKKESMODSDK)\include\imgui\imgui.cpp" Condition="Exists('$(BAKKESMODSDK)\include\imgui\imgui.cpp')">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(BAKKESMODSDK)\include\imgui\imgui_draw.cpp" Condition="Exists('$(BAKKESMODSDK)\include\imgui\imgui_draw.cpp')">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(BAKKESMODSDK)\include\imgui\imgui_widgets.cpp" Condition="Exists('$(BAKKESMODSDK)\include\imgui\imgui_widgets.cpp')">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(BAKKESMODSDK)\include\imgui\imgui_tables.cpp" Condition="Exists('$(BAKKESMODSDK)\include\imgui\imgui_tables.cpp')">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(BAKKESMODSDK)\include\imgui\imgui_demo.cpp" Condition="Exists('$(BAKKESMODSDK)\include\imgui\imgui_demo.cpp')">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
